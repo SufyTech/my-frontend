@@ -1,0 +1,5 @@
+{
+  "name": "CodeMind AI",
+  "description": "AI-powered code review and analysis platform featuring automated code quality checks, security scanning, and instant feedback using the Gemini 2.5 Flash model.",
+  "requestFramePermissions": []
+}

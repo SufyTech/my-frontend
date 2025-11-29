@@ -1,0 +1,38 @@
+{
+  "name": "codemind-ai",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^1.30.0",
+    "@react-oauth/google": "^0.12.2",
+    "@reactour/tour": "^3.8.0",
+    "axios": "^1.13.2",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.554.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.5.0",
+    "react-is": "^19.2.0",
+    "react-router-dom": "^7.9.6",
+    "recharts": "^3.5.0",
+    "sonner": "^2.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/recharts": "^1.8.29",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
