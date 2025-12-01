@@ -59,9 +59,14 @@ const Settings: React.FC = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/auth/me", {
+        if (!token) throw new Error("No token found, please login.");
+
+        const API_URL = import.meta.env.VITE_API_URL;
+
+        const res = await axios.get(`${API_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         setUser(res.data.user);
       } catch (err) {
         console.error("Failed to fetch user:", err);
@@ -70,6 +75,7 @@ const Settings: React.FC = () => {
         setLoading(false);
       }
     };
+
     fetchUser();
   }, []);
 
@@ -139,7 +145,7 @@ const Settings: React.FC = () => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
-              <ProfileSection user={user} setUser={setUser} />
+              <ProfileSection />
             </motion.div>
           )}
 

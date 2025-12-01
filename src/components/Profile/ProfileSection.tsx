@@ -5,6 +5,7 @@ import { useUser } from "../../context/UserContext";
 const getAvatarUrl = (avatarUrl: string | undefined) =>
   avatarUrl ? `${avatarUrl}?t=${Date.now()}` : "/default-avatar.png";
 
+
 const ProfileSection: React.FC = () => {
   const { user, updateProfile } = useUser();
   const [name, setName] = useState(user?.name || "");
