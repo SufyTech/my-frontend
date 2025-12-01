@@ -14,12 +14,15 @@ import OAuthSuccess from "./pages/OAuthSuccess";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Loader from "./components/Loader";
+import { useUser } from "./context/UserContext";
+
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" />;
 };
 
 const App: React.FC = () => {
+  const { user } = useUser();
   const [showWelcome, setShowWelcome] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +36,7 @@ const App: React.FC = () => {
     }
 
     // Force minimum loader time
-    const minTime = 3500; // 1.5 seconds
+    const minTime = 3500; // 3.5 seconds
     const start = Date.now();
 
     const finishLoading = () => setLoading(false);
@@ -66,33 +69,15 @@ const App: React.FC = () => {
         {/* Public Routes */}
         <Route
           path="/"
-          element={
-            localStorage.getItem("token") ? (
-              <Navigate to="/dashboard" />
-            ) : (
-              <Home />
-            )
-          }
+          element={user ? <Navigate to="/dashboard" /> : <Home />}
         />
         <Route
           path="/login"
-          element={
-            localStorage.getItem("token") ? (
-              <Navigate to="/dashboard" />
-            ) : (
-              <Login />
-            )
-          }
+          element={user ? <Navigate to="/dashboard" /> : <Login />}
         />
         <Route
           path="/signup"
-          element={
-            localStorage.getItem("token") ? (
-              <Navigate to="/dashboard" />
-            ) : (
-              <Signup />
-            )
-          }
+          element={user ? <Navigate to="/dashboard" /> : <Signup />}
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />

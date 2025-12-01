@@ -39,17 +39,8 @@ const Sidebar: React.FC<{ currentPath?: string }> = ({ currentPath }) => {
     }`;
 
   const handleLogout = () => {
-    document.body.classList.add(
-      "opacity-0",
-      "transition-opacity",
-      "duration-500"
-    );
-    setTimeout(() => {
-      logout();
-      navigate("/");
-      document.body.classList.remove("opacity-0");
-      document.body.classList.add("opacity-100");
-    }, 300);
+    logout();
+    navigate("/", { replace: true });
   };
 
   const navItems = [
