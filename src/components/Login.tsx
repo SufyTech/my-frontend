@@ -7,7 +7,7 @@ import { useUser } from "../context/UserContext";
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser, fetchUser } = useUser();
+  const { setUser } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,6 +15,26 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<"idle" | "loading" | "success">(
     "idle"
   );
+
+  const fetchCurrentUser = async (token: string) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.user) {
+        data.user.avatarUrl = data.user.avatarUrl || "/default-avatar.png";
+        setUser(data.user);
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("userAvatar", data.user.avatarUrl);
+      }
+    } catch (err) {
+      console.error("Failed to fetch user after login:", err);
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -31,14 +51,11 @@ const Login: React.FC = () => {
     try {
       setLoading("loading");
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await res.json();
 
@@ -54,8 +71,7 @@ const Login: React.FC = () => {
       setLoading("success");
       navigate("/dashboard", { state: { message: "Logged in successfully!" } });
 
-      // Fetch full user data
-      await fetchUser();
+      fetchCurrentUser(data.token);
     } catch {
       alert("Something went wrong");
       setLoading("idle");
@@ -67,7 +83,7 @@ const Login: React.FC = () => {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/google-login`,
+        `${import.meta.env.VITE_API_URL}/auth/google-login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -85,8 +101,7 @@ const Login: React.FC = () => {
       setLoading("success");
       navigate("/dashboard", { state: { message: "Logged in successfully!" } });
 
-      // Fetch full user data
-      await fetchUser();
+      fetchCurrentUser(data.token);
     } catch {
       alert("Google login failed");
     }
@@ -128,7 +143,7 @@ const Login: React.FC = () => {
             </p>
           </div>
 
-          {/* Google Login */}
+          {/* Google Login (responsive) */}
           <div className="mb-4 sm:mb-6 w-full flex justify-center">
             <div className="w-full max-w-xs">
               <GoogleLogin
@@ -147,6 +162,7 @@ const Login: React.FC = () => {
 
           {/* Form */}
           <form onSubmit={handleLogin} className="flex flex-col gap-3 sm:gap-4">
+            {/* Email */}
             <label className="flex flex-col">
               <span className="pb-1 sm:pb-2 text-slate-200 text-sm sm:text-base">
                 Email
@@ -161,6 +177,7 @@ const Login: React.FC = () => {
               />
             </label>
 
+            {/* Password */}
             <label className="flex flex-col relative">
               <span className="pb-1 sm:pb-2 text-slate-200 text-sm sm:text-base">
                 Password
@@ -191,6 +208,7 @@ const Login: React.FC = () => {
               </p>
             </label>
 
+            {/* Login Button */}
             <button
               type="submit"
               disabled={loading === "loading"}
@@ -219,6 +237,7 @@ const Login: React.FC = () => {
             </button>
           </form>
 
+          {/* Signup */}
           <p className="text-center text-xs sm:text-sm text-slate-400 mt-4 sm:mt-6">
             Don't have an account?{" "}
             <button
