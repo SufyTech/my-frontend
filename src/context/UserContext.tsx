@@ -27,37 +27,40 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // Fetch user from API or localStorage
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/auth/me`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (res.data.user) {
-        setUser(res.data.user);
+        const userData = res.data.user;
+        userData.avatarUrl = userData.avatarUrl || "/default-avatar.png";
 
-        // Save to localStorage
-        localStorage.setItem("userName", res.data.user.name);
-        localStorage.setItem("userEmail", res.data.user.email);
-        localStorage.setItem("userAvatar", res.data.user.avatarUrl);
+        setUser(userData);
+
+        localStorage.setItem("userName", userData.name);
+        localStorage.setItem("userEmail", userData.email);
+        localStorage.setItem("userAvatar", userData.avatarUrl);
       }
     } catch (err) {
       console.error("fetchUser error:", err);
     }
   };
 
-  // Update profile
   const updateProfile = async (formData: FormData) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+        `${import.meta.env.VITE_API_URL}/api/auth/update-profile`,
         formData,
         {
           headers: {
@@ -68,19 +71,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (res.data.user) {
-        setUser(res.data.user);
+        const updatedUser = res.data.user;
+        updatedUser.avatarUrl = updatedUser.avatarUrl || "/default-avatar.png";
 
-        // Sync localStorage
-        localStorage.setItem("userName", res.data.user.name);
-        localStorage.setItem("userEmail", res.data.user.email);
-        localStorage.setItem("userAvatar", res.data.user.avatarUrl);
+        setUser(updatedUser);
+
+        localStorage.setItem("userName", updatedUser.name);
+        localStorage.setItem("userEmail", updatedUser.email);
+        localStorage.setItem("userAvatar", updatedUser.avatarUrl);
       }
     } catch (err) {
       console.error("updateProfile error:", err);
     }
   };
 
-  // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem("token");
@@ -89,7 +93,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("userAvatar");
   };
 
-  // On mount, fetch user
   useEffect(() => {
     fetchUser();
   }, []);
@@ -103,7 +106,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook to use UserContext
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) throw new Error("useUser must be used within a UserProvider");

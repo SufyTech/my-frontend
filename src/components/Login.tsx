@@ -7,7 +7,7 @@ import { useUser } from "../context/UserContext";
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useUser();
+  const { setUser, fetchUser } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,22 +15,6 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<"idle" | "loading" | "success">(
     "idle"
   );
-
-  const fetchCurrentUser = async (token: string) => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok && data.user) {
-        if (!data.user.avatar) data.user.avatar = "/default-avatar.png";
-        setUser(data.user);
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-    } catch (err) {
-      console.error("Failed to fetch user after login:", err);
-    }
-  };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -70,7 +54,8 @@ const Login: React.FC = () => {
       setLoading("success");
       navigate("/dashboard", { state: { message: "Logged in successfully!" } });
 
-      fetchCurrentUser(data.token);
+      // Fetch full user data
+      await fetchUser();
     } catch {
       alert("Something went wrong");
       setLoading("idle");
@@ -82,7 +67,7 @@ const Login: React.FC = () => {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/google-login`,
+        `${import.meta.env.VITE_API_URL}/api/auth/google-login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -100,7 +85,8 @@ const Login: React.FC = () => {
       setLoading("success");
       navigate("/dashboard", { state: { message: "Logged in successfully!" } });
 
-      fetchCurrentUser(data.token);
+      // Fetch full user data
+      await fetchUser();
     } catch {
       alert("Google login failed");
     }
@@ -142,7 +128,7 @@ const Login: React.FC = () => {
             </p>
           </div>
 
-          {/* Google Login (responsive) */}
+          {/* Google Login */}
           <div className="mb-4 sm:mb-6 w-full flex justify-center">
             <div className="w-full max-w-xs">
               <GoogleLogin
@@ -161,7 +147,6 @@ const Login: React.FC = () => {
 
           {/* Form */}
           <form onSubmit={handleLogin} className="flex flex-col gap-3 sm:gap-4">
-            {/* Email */}
             <label className="flex flex-col">
               <span className="pb-1 sm:pb-2 text-slate-200 text-sm sm:text-base">
                 Email
@@ -176,7 +161,6 @@ const Login: React.FC = () => {
               />
             </label>
 
-            {/* Password */}
             <label className="flex flex-col relative">
               <span className="pb-1 sm:pb-2 text-slate-200 text-sm sm:text-base">
                 Password
@@ -207,7 +191,6 @@ const Login: React.FC = () => {
               </p>
             </label>
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading === "loading"}
@@ -236,7 +219,6 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          {/* Signup */}
           <p className="text-center text-xs sm:text-sm text-slate-400 mt-4 sm:mt-6">
             Don't have an account?{" "}
             <button
