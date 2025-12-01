@@ -16,7 +16,6 @@ const Login: React.FC = () => {
     "idle"
   );
 
-  // Fetch user details in the background
   const fetchCurrentUser = async (token: string) => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
@@ -41,7 +40,6 @@ const Login: React.FC = () => {
     }
   }, [location, navigate]);
 
-  // Standard login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return alert("Please fill all fields");
@@ -66,15 +64,12 @@ const Login: React.FC = () => {
         return;
       }
 
-      // Save token immediately
       localStorage.setItem("token", data.token);
       localStorage.setItem("firstTimeUser", "false");
 
-      // Navigate instantly with success message
       setLoading("success");
       navigate("/dashboard", { state: { message: "Logged in successfully!" } });
 
-      // Fetch user in background
       fetchCurrentUser(data.token);
     } catch {
       alert("Something went wrong");
@@ -82,7 +77,6 @@ const Login: React.FC = () => {
     }
   };
 
-  // Google login
   const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
     if (!credentialResponse.credential) return;
 
@@ -103,11 +97,9 @@ const Login: React.FC = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("firstTimeUser", "false");
 
-      // Navigate instantly
       setLoading("success");
       navigate("/dashboard", { state: { message: "Logged in successfully!" } });
 
-      // Fetch user in background
       fetchCurrentUser(data.token);
     } catch {
       alert("Google login failed");
@@ -115,88 +107,100 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#030712] text-white">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#030712] text-white">
+      {/* Left image (desktop only) */}
       <div className="hidden lg:flex w-2/5 h-screen sticky top-0">
         <div
           className="w-full h-full bg-cover bg-center"
           style={{
             backgroundImage:
-              'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlOadqDK9W6i17layigSVaN7hlNQr7_joR03NspnLbXSFHM7eTh0yxRz17FOlu7ptF-rP1AkukxovYw2cbzJo3b7uWHfJB4lHj0vzIo0S-wyK4W-0CYcNLtrSMsV7JjCE67Gwzd8jkDLSIuZcPQjqPzZrhrXtOrVkB653kVz-CxWtE2XaCWHYm0BifUa8zTiCIPRb1trOGTbizu_CvgFmKNBKT_naYMtux5YXDSBQJRTlI3nM_j8JYu15u6Xw1iZ2QeJbq_e99LGE")',
+              'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlOadqDK9W6i17layigSVaN7hlNQr7_joR03NspnLbXSFHM7eTh0yxRz17FOlu7ptF-rP1AkukxovYw2cbzJo3b7uWHfJB4lHj0vzIo0S-wyK4W-0CYcNLtrSMsV7JjCE67Gwzd8jkDLSIuZcPQjqPzZrhrXtOrVkB653kVz-CxWtCWHYm0BifUa8zTiCIPRb1trOGTbizu_CvgFmKNBKT_naYMtux5YXDSBQJRTlI3nM_j8JYu15u6Xw1iZ2QeJbq_e99LGE")',
           }}
         ></div>
       </div>
 
-      <div className="flex-1 flex justify-center items-center p-8 sm:p-12">
-        <div className="w-full max-w-md glass-card p-8 rounded-2xl shadow-lg relative">
+      {/* Right form */}
+      <div className="flex-1 flex justify-center items-center p-4 sm:p-8 lg:p-12">
+        <div className="w-full max-w-md glass-card p-6 sm:p-8 lg:p-10 rounded-2xl shadow-lg relative">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-primary text-4xl font-extrabold select-none">
+          <div className="flex items-center gap-3 mb-4 sm:mb-6">
+            <span className="text-primary text-3xl sm:text-4xl font-extrabold select-none">
               {"{ }"}
             </span>
-            <p className="text-2xl font-bold text-white glow-text">CodeAI</p>
+            <p className="text-xl sm:text-2xl font-bold text-white glow-text">
+              CodeAI
+            </p>
           </div>
 
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-4xl font-black text-white mb-2">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-1 sm:mb-2">
               Log in to your account
             </h1>
-            <p className="text-base text-slate-300">
+            <p className="text-sm sm:text-base text-slate-300">
               Enter your credentials to continue
             </p>
           </div>
 
-          {/* Google Login */}
-          <div className="mb-6">
-            <GoogleLogin
-              onSuccess={handleGoogleLogin}
-              onError={() => alert("Google login failed")}
-            />
+          {/* Google Login (responsive) */}
+          <div className="mb-4 sm:mb-6 w-full flex justify-center">
+            <div className="w-full max-w-xs">
+              <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={() => alert("Google login failed")}
+              />
+            </div>
           </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
             <hr className="flex-1 border-slate-600" />
-            <p className="text-sm text-slate-400">OR</p>
+            <p className="text-xs sm:text-sm text-slate-400">OR</p>
             <hr className="flex-1 border-slate-600" />
           </div>
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-3 sm:gap-4">
+            {/* Email */}
             <label className="flex flex-col">
-              <span className="pb-2 text-slate-200">Email</span>
+              <span className="pb-1 sm:pb-2 text-slate-200 text-sm sm:text-base">
+                Email
+              </span>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="rounded-lg border border-slate-700 bg-transparent p-3 text-white placeholder-slate-400 focus:ring-2 focus:ring-primary focus:outline-none"
+                className="rounded-lg border border-slate-700 bg-transparent p-2 sm:p-3 text-white placeholder-slate-400 focus:ring-2 focus:ring-primary focus:outline-none text-sm sm:text-base"
                 required
               />
             </label>
 
+            {/* Password */}
             <label className="flex flex-col relative">
-              <span className="pb-2 text-slate-200">Password</span>
+              <span className="pb-1 sm:pb-2 text-slate-200 text-sm sm:text-base">
+                Password
+              </span>
               <div className="flex items-center border border-slate-700 rounded-lg overflow-hidden">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="flex-1 bg-transparent p-3 text-white placeholder-slate-400 focus:outline-none"
+                  className="flex-1 bg-transparent p-2 sm:p-3 text-white placeholder-slate-400 focus:outline-none text-sm sm:text-base"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="px-3 flex items-center justify-center text-slate-400 hover:text-white transition"
+                  className="px-2 sm:px-3 flex items-center justify-center text-slate-400 hover:text-white transition"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
 
               <p
-                className="text-right text-sm text-primary mt-1 cursor-pointer hover:underline"
+                className="text-right text-xs sm:text-sm text-primary mt-1 cursor-pointer hover:underline"
                 onClick={() => navigate("/forgot-password")}
               >
                 Forgot Password?
@@ -207,7 +211,7 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading === "loading"}
-              className={`relative w-full h-12 rounded-lg font-bold flex justify-center items-center overflow-hidden transition-all duration-300
+              className={`relative w-full h-10 sm:h-12 rounded-lg font-bold flex justify-center items-center overflow-hidden transition-all duration-300
                 bg-gradient-to-r from-primary/90 to-primary/60
                 hover:from-primary/100 hover:to-primary/80
                 ${
@@ -233,7 +237,7 @@ const Login: React.FC = () => {
           </form>
 
           {/* Signup */}
-          <p className="text-center text-sm text-slate-400 mt-6">
+          <p className="text-center text-xs sm:text-sm text-slate-400 mt-4 sm:mt-6">
             Don't have an account?{" "}
             <button
               onClick={() => navigate("/signup")}
